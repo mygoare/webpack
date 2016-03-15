@@ -1,0 +1,25 @@
+.sparkline-container
+{
+    width: 100%;
+    height: 100%;
+}
+
+.helloSparkline
+{
+    font-size: 16px;
+    color: green;
+}
+
+// If you want your css be local, add :local as a wrapper
+// If you want your css be global, add :global is an alternative
+
+
+:global
+{
+    .helloSparkline
+    {
+        font-size: 16px;
+        color: red;
+    }
+
+}
