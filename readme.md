@@ -1,5 +1,5 @@
-// webpack
-webpack-dev-server --host 0.0.0.0 --port 8080 -w
+## Start dev
+`npm run dev`
 
-// start express server
-node app.js
+## build
+`npm run build`

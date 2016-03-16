@@ -32,8 +32,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack-dev-server --host 127.0.0.1",
-    "build": "webpack"
+    "dev": "webpack-dev-server --host 127.0.0.1 --progress --colors & node app.js",
+    "build": "webpack --progress --colors"
   },
   "author": "",
   "license": "MIT"
