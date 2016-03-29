@@ -1,9 +1,9 @@
 import React from 'react'
 import {render} from 'react-dom'
-// import {Provider} from 'react-redux'
+import PubSub from 'pubsub-js'
+// import {Provider, connect} from 'react-redux'
 import {createStore} from 'redux'
 import todoApp from './reducers'
-// import App from '../components/App'
 
 import {addTodo} from './actions'
 
@@ -15,53 +15,83 @@ store.subscribe(function(){
 })
 
 
-var Todos = function({todos})
+var mySubscriber = function( msg, data ){
+    console.log( msg, data );
+};
+var token = PubSub.subscribe( 'MY TOPIC', mySubscriber );
+
+// publish a topic asyncronously
+PubSub.publish( 'MY TOPIC', 'hello world!' );
+
+
+// components
+var List = function({lists, onListClick})
 {
-    var todoLi = todos.map(function(item){
+    var lis = lists.map(function(list){
         return (
-            <li>{item.value}</li>
+            <li onClick={(e)=>{return onListClick(e)}}>{list}</li>
         )
     })
+
     return (
         <ul>
-            {todoLi}
+            {lis}
         </ul>
     )
 }
-var TodoInput = function()
+var Input = function({placeholder, value})
 {
     return (
-        <input type="text" />
+        <input type="text" placeholder={placeholder} value={value} />
+    )
+}
+var Btn = function({onBtnClick})
+{
+    return (
+        <input type="button" value="Add Todo" onClick={onBtnClick} />
     )
 }
 
-var TodoBtn = React.createClass({
-    todoAdd: function(e)
+// containers
+var TodoContainer = React.createClass({
+    getInitialState: function()
     {
-        e.preventDefault();
-        var val = e.target.value;
+        return {todos: []}
+    },
+    componentDidMount: function()
+    {
+        store.subscribe(()=>{
+            var newTodos = store.getState().items;
+
+            this.setState({todos: newTodos})
+        });
+    },
+    add: function()
+    {
+        var val = this.refs.input.value;
+        console.log('on clicked', val);
         store.dispatch(addTodo(val));
+
+        this.refs.input.value = '';
+    },
+    onListClick: function(e)
+    {
+        console.log('list clicked', e.target.innerHTML);
     },
     render: function()
     {
+        var todos = this.state.todos;
         return (
-            <input type="button" value="Add Todo" onClick={this.todoAdd} />
+            <div>
+                <List lists={todos} onListClick={this.onListClick}/>
+                <Input />
+                <Btn onBtnClick={this.add}/>
+            </div>
         )
     }
 })
 
-
-var todos = [
-    {key: 1, value: 'one'},
-    {key: 2, value: 'two'},
-    {key: 3, value: 'three'}
-]
-
 render(
-    <div>
-        <Todos todos={todos}/>
-        <TodoInput/>
-        <TodoBtn/>
-    </div>,
+    <TodoContainer />,
     document.getElementById('root')
 )
